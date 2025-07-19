@@ -76,29 +76,9 @@ async function fixLongDescriptions() {
 
 /******************************************************************************/
 
-// Apple store rejects when version has four components.
-
-async function fixManifest() {
-    const packageDir = commandLineArgs.packageDir;
-    const path = `${packageDir}/manifest.json`;
-    let text = await fs.readFile(path, { encoding: 'utf8' });
-    const manifest = JSON.parse(text);
-    const match = /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/.exec(manifest.version);
-    if ( match === null ) { return; }
-    const month = parseInt(match[2], 10);
-    const dayofmonth = parseInt(match[3], 10);
-    const monthday /* sort of */ = month * 100 + dayofmonth;
-    manifest.version = `${match[1]}.${monthday}.${match[4]}`;
-    text = JSON.stringify(manifest, null, 2);
-    await fs.writeFile(path, text);
-}
-
-/******************************************************************************/
-
 async function main() {
     await Promise.all([
         fixLongDescriptions(),
-        fixManifest(),
     ]);
 }
 
